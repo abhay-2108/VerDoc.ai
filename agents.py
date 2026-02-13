@@ -2,16 +2,13 @@ from crewai import Agent
 from langchain_ollama import ChatOllama
 import os
 
-# Set environment variables to bypass OpenAI and telemetry
 os.environ["OPENAI_API_KEY"] = "NA"
-os.environ["OPENAI_API_BASE"] = "http://localhost:11434/v1" # Redirect to local Ollama API if searched
+os.environ["OPENAI_API_BASE"] = "http://localhost:11434/v1"
 os.environ["OTEL_SDK_DISABLED"] = "true"
 os.environ["CREWAI_TELEMETRY_OPT_OUT"] = "true"
 
-# Configuration for Ollama
 llm = "ollama/qwen3:8b"
 
-# Embedder configuration
 embedder_config = {
     "provider": "ollama",
     "config": {

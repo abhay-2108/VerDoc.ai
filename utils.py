@@ -7,7 +7,6 @@ import numpy as np
 import pdfplumber
 from langdetect import detect
 
-# Tesseract Path Configuration for Windows
 common_tesseract_paths = [
     r'C:\Program Files\Tesseract-OCR\tesseract.exe',
     r'C:\Users\\' + os.getlogin() + r'\AppData\Local\Tesseract-OCR\tesseract.exe',
@@ -64,14 +63,9 @@ def detect_document_language(text):
 def extract_text_from_image(image_path):
     """Extracts text from an image file using OCR."""
     try:
-        # Load the image
         image = cv2.imread(image_path)
-        # Convert to grayscale
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        # Apply thresholding
         gray = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
-        
-        # Perform OCR
         text = pytesseract.image_to_string(gray)
         return text.strip()
     except Exception as e:
@@ -88,5 +82,4 @@ def get_document_content(file_path):
         return "Unsupported file type."
 
 if __name__ == "__main__":
-    # Test with a known file if needed
     pass

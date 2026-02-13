@@ -3,11 +3,11 @@ function formatMarkdown(text) {
   if (!text) return '';
 
   return text
-    .replace(/^### (.*$)/gim, '<h3>$1</h3>') // Headers
-    .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')   // Bold
-    .replace(/-(.*?$)/gim, '<li>$1</li>')     // Bullet points
-    .replace(/\n\n/g, '<br><br>')              // Paragraphs
-    .replace(/\n/g, '<br>');                   // Single newlines
+    .replace(/^### (.*$)/gim, '<h3>$1</h3>') 
+    .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')   
+    .replace(/-(.*?$)/gim, '<li>$1</li>')     
+    .replace(/\n\n/g, '<br><br>')              
+    .replace(/\n/g, '<br>');                   
 }
 
 document.getElementById('dropZone').addEventListener('click', () => {
@@ -51,7 +51,6 @@ document.getElementById('analyzeBtn').addEventListener('click', async () => {
     resultsDiv.style.display = 'block';
     document.getElementById('docType').textContent = `Document Type: ${result.doc_type}`;
 
-    // Format the final advice with markdown
     adviceDiv.innerHTML = formatMarkdown(result.final_advice);
 
   } catch (error) {

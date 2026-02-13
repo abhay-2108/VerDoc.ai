@@ -29,18 +29,15 @@ def run_veridoc(file_path):
         "coordinates": []
     }
     
-    # 1. Extract content and language
     content = get_document_content(file_path)
     if "Error" in content or "Unsupported" in content:
         return {"error": content}
     
     results["language"] = detect_document_language(content[:1000])
     
-    # Extract coordinates for XAI if it's a PDF
     if file_path.lower().endswith(".pdf"):
         results["coordinates"] = extract_text_with_coordinates(file_path)
 
-    # 2. Dispatcher Task to classify the document
     dispatcher_task = get_dispatcher_task(dispatcher_agent, content[:2000])
     
     crew_dispatch = Crew(
@@ -62,7 +59,6 @@ def run_veridoc(file_path):
     except Exception as e:
         return {"error": f"Dispatcher failed: {str(e)}"}
     
-    # Parse the result to get doc_type
     doc_type = "UNKNOWN"
     raw_res = str(dispatch_result).upper()
     if "LEASE" in raw_res:
@@ -74,7 +70,6 @@ def run_veridoc(file_path):
     
     results["doc_type"] = doc_type
 
-    # 3. Based on type, assign to correct Spoke Agent
     spoke_agent = None
     spoke_task = None
 
@@ -88,12 +83,10 @@ def run_veridoc(file_path):
         spoke_agent = doctor_agent
         spoke_task = get_doctor_task(doctor_agent, content)
     else:
-        return results # Return early if type unknown but classification worked
+        return results 
 
-    # 4. Signature & Authentication Task
     signature_task = get_signature_task(signature_agent, content)
     
-    # 5. Advisor Task to synthesize findings
     advisor_task = get_advisor_task(advisor_agent, "{findings}", language=results["language"])
     
     analysis_crew = Crew(
@@ -111,8 +104,6 @@ def run_veridoc(file_path):
 
     try:
         final_kickoff = analysis_crew.kickoff()
-        # Extract individual task results
-        # Task 0: Spoke Task, Task 1: Signature Task, Task 2: Advisor Task
         if hasattr(final_kickoff, 'tasks_output') and len(final_kickoff.tasks_output) >= 3:
             results["spoke_report"] = str(final_kickoff.tasks_output[0])
             results["signature_report"] = str(final_kickoff.tasks_output[1])
@@ -127,7 +118,6 @@ def run_veridoc(file_path):
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python main.py <path_to_document>")
-        # Default test if no file provided
         test_file = "p:/College Projects/SLP/VeriDoc.ai/Test Documents/Lease_Violation_Test.pdf"
         if os.path.exists(test_file):
             res = run_veridoc(test_file)

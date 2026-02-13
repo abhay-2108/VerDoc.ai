@@ -5,9 +5,8 @@ from main import run_veridoc
 import time
 import json
 from PIL import Image, ImageDraw
-import fitz  # PyMuPDF
+import fitz  
 
-# Page configuration
 st.set_page_config(
     page_title="VeriDoc.ai | AI Document Analyzer",
     page_icon="🔍",
@@ -15,11 +14,9 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Load custom CSS
 with open("styles.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-# Sidebar with logo and navigation
 with st.sidebar:
     st.title("🔍 VeriDoc.ai")
     st.markdown("---")
@@ -38,7 +35,6 @@ with st.sidebar:
             accurate = sum(1 for fb in feedbacks if fb["status"] == "accurate")
             accuracy = (accurate / total * 100) if total > 0 else 0
             
-            # Using columns for centering and wrapping in a styled div
             st.markdown('<div class="health-container">', unsafe_allow_html=True)
             c1, c2 = st.columns(2)
             c1.metric("Total", total)
@@ -59,11 +55,9 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("Powered by **CrewAI** & **Ollama**")
 
-# Main Page Header
 st.title("Analyze smarter, not harder.")
 st.markdown("Automated document classification and deep analysis for professional workflows.")
 
-# File Uploader
 uploaded_file = st.file_uploader("Upload your document (PDF or Image)", type=["pdf", "jpg", "jpeg", "png", "webp"])
 
 if uploaded_file is not None:
@@ -83,7 +77,6 @@ if uploaded_file is not None:
             with st.status("Initializing Agents...", expanded=True) as status:
                 st.write("Dispatcher identifying document type...")
                 try:
-                    # Run the analysis
                     results = run_veridoc(tmp_path)
                     
                     if "error" in results:
@@ -97,9 +90,8 @@ if uploaded_file is not None:
                         st.write("Advisor synthesizing final report...")
                         status.update(label="Analysis Complete!", state="complete", expanded=False)
                         
-                        # Store results in session state
                         st.session_state.analysis_results = results
-                        st.session_state.doc_path = tmp_path # Keep for highlighting
+                        st.session_state.doc_path = tmp_path 
                 except Exception as e:
                     st.error(f"System Error: {str(e)}")
                     status.update(label="Failed", state="error")
@@ -111,7 +103,6 @@ if uploaded_file is not None:
             st.subheader(f"✨ Analysis Report: {res['doc_type']}")
             st.caption(f"Language detected: {res['language']}")
             
-            # Use tabs for different views
             tab1, tab2, tab3, tab4 = st.tabs(["📝 Final Advice", "🛡️ Signatures", "🔍 XAI Highlighting", "🛠️ HITL Verification"])
             
             with tab1:
@@ -126,17 +117,14 @@ if uploaded_file is not None:
                 st.markdown("### Explainable AI (XAI)")
                 st.write("Below is the document with highlighted areas identified as critical for the analysis.")
                 
-                # PDF Highlighting Logic using PyMuPDF (no poppler needed)
                 if "doc_path" in st.session_state and st.session_state.doc_path.lower().endswith(".pdf"):
                     try:
                         doc = fitz.open(st.session_state.doc_path)
-                        page = doc.load_page(0)  # Load first page
+                        page = doc.load_page(0)  
                         pix = page.get_pixmap()
                         img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
                         
                         draw = ImageDraw.Draw(img, "RGBA")
-                        # Placeholder for actual highlighting logic
-                        # In the future, we can map coordinates here
                         
                         st.image(img, use_container_width=True)
                         doc.close()
@@ -171,13 +159,11 @@ if uploaded_file is not None:
 
             st.success("Analysis finalized successfully.")
             
-    # Cleanup temporary file
     os.unlink(tmp_path)
 
 else:
     st.info("Please upload a document to get started.")
     
-    # Feature Showcase
     st.divider()
     cols = st.columns(3)
     with cols[0]:
