@@ -1,0 +1,102 @@
+/* VeriDoc.ai Custom Styles - Light Theme */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+:root {
+    --primary: #4f46e5;
+    --secondary: #7c3aed;
+    --bg-light: #f8fafc;
+    --text-dark: #1e293b;
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(0, 0, 0, 0.05);
+}
+
+.stApp {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    font-family: 'Inter', sans-serif;
+}
+
+/* Glassmorphism containers - Light Version */
+.stMetric,
+.stAlert,
+div.stButton>button {
+    background: var(--glass-bg);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+h1,
+h2,
+h3 {
+    color: var(--text-dark) !important;
+    font-weight: 700 !important;
+}
+
+p,
+span,
+label,
+.stMarkdown {
+    color: #475569 !important;
+}
+
+/* Custom button styling */
+div.stButton>button {
+    width: 100%;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+    color: white !important;
+    border: none !important;
+    padding: 12px 24px !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+}
+
+div.stButton>button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+}
+
+/* Sidebar styling */
+[data-testid="stSidebar"] {
+    background-color: white !important;
+    border-right: 1px solid #e2e8f0;
+}
+
+/* File uploader styling */
+[data-testid="stFileUploadDropzone"] {
+    background: #1e293b !important;
+    /* Darker background for contrast */
+    border: 2px dashed #475569 !important;
+    border-radius: 16px !important;
+    color: white !important;
+}
+
+[data-testid="stFileUploadDropzone"] p,
+[data-testid="stFileUploadDropzone"] span {
+    color: white !important;
+}
+
+/* Status widget styling */
+[data-testid="stStatusWidget"] {
+    background: #1e293b !important;
+    color: white !important;
+}
+
+[data-testid="stStatusWidget"] div {
+    color: white !important;
+}
+
+/* Ensure all markdown in containers is legible */
+.stMarkdown p {
+    color: inherit;
+}
+
+/* Centering Health Section */
+.health-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+}

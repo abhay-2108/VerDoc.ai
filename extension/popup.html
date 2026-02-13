@@ -1,0 +1,141 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      width: 450px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 15px;
+      background-color: #f8fafc;
+      color: #1e293b;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      font-size: 18px;
+      margin: 0;
+      color: #4f46e5;
+    }
+
+    .upload-area {
+      border: 2px dashed #cbd5e1;
+      padding: 20px;
+      text-align: center;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .upload-area:hover {
+      background-color: #f1f5f9;
+    }
+
+    #analyzeBtn {
+      width: 100%;
+      background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: bold;
+      margin-top: 15px;
+      cursor: pointer;
+    }
+
+    #results {
+      margin-top: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.6;
+      display: none;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      max-height: 250px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #cbd5e1 transparent;
+    }
+
+    /* Custom Scrollbar for Chrome */
+    #results::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #results::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    #results::-webkit-scrollbar-thumb {
+      background-color: #cbd5e1;
+      border-radius: 20px;
+    }
+
+    #results::-webkit-scrollbar-thumb:hover {
+      background-color: #94a3b8;
+    }
+
+    #results strong {
+      color: #1e293b;
+      display: block;
+      margin-bottom: 10px;
+      font-size: 16px;
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 5px;
+    }
+
+    .result-content {
+      color: #334155;
+    }
+
+    .result-content b {
+      color: #4f46e5;
+    }
+
+    .result-content h3 {
+      font-size: 15px;
+      margin-top: 15px;
+      margin-bottom: 8px;
+      color: #1e1b4b;
+    }
+
+    .status {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 10px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header">
+    <h1>🔍 VeriDoc.ai</h1>
+  </div>
+
+  <div class="upload-area" id="dropZone">
+    <p>📄 Select document to analyze</p>
+    <input type="file" id="fileInput" style="display: none;">
+  </div>
+
+  <button id="analyzeBtn">Run Analysis</button>
+
+  <div class="status" id="status">Ready</div>
+
+  <div id="results">
+    <strong id="docType"></strong>
+    <div id="advice" class="result-content"></div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+
+</html>

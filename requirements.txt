@@ -1,0 +1,15 @@
+crewai
+langchain-ollama
+pypdf
+Pillow
+pytesseract
+opencv-python-headless
+litellm
+pdf2image
+langdetect
+pdfplumber
+pymupdf
+fastapi
+uvicorn
+python-multipart
+streamlit
