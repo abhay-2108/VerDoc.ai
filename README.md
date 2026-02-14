@@ -1,14 +1,15 @@
 # VeriDoc.ai | AI-Powered Document Analyzer
 
-VeriDoc.ai is a professional multi-agent system designed for automated document classification and deep specialized analysis. It uses **CrewAI** orchestrated with **Ollama** to provide private, secure, and expert-level insights into Legal, Medical, and Financial documents.
+VeriDoc.ai is a professional multi-agent system designed for automated document classification and deep specialized analysis. It uses **CrewAI** orchestrated with **Ollama** and **RAG (Retrieval-Augmented Generation)** to provide private, secure, and expert-level insights into Legal, Medical, and Financial documents.
 
 ## Features
+- **RAG-Powered Intelligence**: Dynamically searches uploaded documents and reference materials using **ChromaDB**.
 - **Modern UI**: Premium Streamlit dashboard with glassmorphism aesthetics.
 - **Chrome Extension**: Analyze documents directly from your browser.
-- **Multi-Agent Intelligence**: Specialized agents for Law, Medicine, and Finance.
+- **Multi-Agent Industry Experts**: Specialized agents for Law, Medicine, and Finance.
 - **XAI (Explainable AI)**: High volume visual highlighting for critical findings.
+- **Tracing & Observability**: Real-time monitoring of agent decisions and task execution.
 - **Multi-lingual Support**: Automatic detection and context-aware responses.
-- **Signature Verification**: Dedicated CV agent for authentication checks.
 - **HITL (Human-in-the-Loop)**: Direct feedback mechanism for active learning.
 
 ---
@@ -16,6 +17,7 @@ VeriDoc.ai is a professional multi-agent system designed for automated document 
 ## Project Structure
 ```text
 VeriDoc.ai/
+├── Documents for Rag/  # Reference PDFs (Model Tenancy Act, CGST Act, etc.)
 ├── extension/          # Chrome Extension source code
 ├── feedback/           # User feedback logs for HITL
 ├── venv/               # Virtual environment
@@ -24,7 +26,7 @@ VeriDoc.ai/
 ├── main.py             # Core orchestration logic
 ├── app.py              # Streamlit Frontend
 ├── api.py              # FastAPI Backend (Extension Bridge)
-└── utils.py            # PDF/OCR/XAI utilities
+└── utils.py            # RAG tools, PDF/OCR/XAI utilities
 ```
 
 ---
@@ -46,7 +48,6 @@ python -m venv venv
 .\venv\Scripts\activate
 pip install -r requirements.txt
 ```
-*(Alternative: `pip install crewai langchain-ollama pypdf pillow pytesseract opencv-python-headless litellm pdf2image langdetect pdfplumber pymupdf fastapi uvicorn python-multipart`)*
 
 ---
 
@@ -54,12 +55,12 @@ pip install -r requirements.txt
 
 ### Tab 1: Local Dashboard (Streamlit)
 ```powershell
-.\venv\Scripts\streamlit run app.py
+streamlit run app.py
 ```
 
 ### Tab 2: Chrome Extension Bridge (API)
 ```powershell
-.\venv\Scripts\python api.py
+python api.py
 ```
 
 ---
@@ -79,5 +80,5 @@ VeriDoc.ai is built with a **local-first** philosophy. All AI reasoning happens 
 
 ## Roadmap
 - Fine-tuning on domain-specific datasets (Legal/Medical).
-- RAG integration with private knowledge bases.
 - Multi-page document batch processing.
+- Persistent vector storage for user document history.

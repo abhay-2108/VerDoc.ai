@@ -1,11 +1,13 @@
 import os
 from pypdf import PdfReader
-from PIL import Image
-import pytesseract
-import cv2
-import numpy as np
 import pdfplumber
 from langdetect import detect
+from langchain_community.document_loaders import PyPDFLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores import Chroma
+from langchain_community.embeddings import OllamaEmbeddings
+from crewai.tools import BaseTool
+from pydantic import Field
 
 common_tesseract_paths = [
     r'C:\Program Files\Tesseract-OCR\tesseract.exe',
@@ -80,6 +82,22 @@ def get_document_content(file_path):
         return extract_text_from_image(file_path)
     else:
         return "Unsupported file type."
+
+def document_search_tool(query: str, pdf_path: str) -> str:
+    """Search for specific information within a PDF document using vector search."""
+    try:
+        loader = PyPDFLoader(pdf_path)
+        documents = loader.load()
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        docs = text_splitter.split_documents(documents)
+        
+        embeddings = OllamaEmbeddings(model="nomic-embed-text:v1.5", base_url="http://localhost:11434")
+        vectorstore = Chroma.from_documents(docs, embeddings)
+        
+        results = vectorstore.similarity_search(query, k=3)
+        return "\n---\n".join([res.page_content for res in results])
+    except Exception as e:
+        return f"Error searching document: {str(e)}"
 
 if __name__ == "__main__":
     pass

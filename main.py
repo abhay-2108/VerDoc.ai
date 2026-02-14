@@ -5,7 +5,8 @@ from crewai import Crew, Process
 from utils import get_document_content, detect_document_language, extract_text_with_coordinates
 from agents import (
     dispatcher_agent, lawyer_agent, doctor_agent, 
-    auditor_agent, advisor_agent, signature_agent, embedder_config
+    auditor_agent, advisor_agent, signature_agent, 
+    embedder_config, get_rag_tool, reference_pdf_paths
 )
 from tasks import (
     get_dispatcher_task, 
@@ -50,7 +51,9 @@ def run_veridoc(file_path):
                 "model": "nomic-embed-text:v1.5",
             }
         },
-        verbose=True
+        verbose=True,
+        memory=True,
+        tracing=True
     )
     
     try:
@@ -75,17 +78,32 @@ def run_veridoc(file_path):
 
     if doc_type == "LEASE":
         spoke_agent = lawyer_agent
-        spoke_task = get_lawyer_task(lawyer_agent, content)
+        spoke_task = get_lawyer_task(lawyer_agent)
     elif doc_type == "INVOICE":
         spoke_agent = auditor_agent
-        spoke_task = get_auditor_task(auditor_agent, content)
+        spoke_task = get_auditor_task(auditor_agent)
     elif doc_type == "LAB_REPORT":
         spoke_agent = doctor_agent
-        spoke_task = get_doctor_task(doctor_agent, content)
+        spoke_task = get_doctor_task(doctor_agent)
     else:
         return results 
 
-    signature_task = get_signature_task(signature_agent, content)
+    # Assign tools dynamically for the uploaded file and reference docs
+    rag_tool = get_rag_tool(file_path)
+    
+    # We add both the current document and relevant reference documents to the agents
+    spoke_agent.tools = [rag_tool]
+    signature_agent.tools = [rag_tool]
+    
+    # Optional: Add reference docs to spoke agents
+    if doc_type == "LEASE":
+        spoke_agent.tools.append(get_rag_tool(reference_pdf_paths[0]))
+    elif doc_type == "INVOICE":
+        spoke_agent.tools.append(get_rag_tool(reference_pdf_paths[1]))
+    elif doc_type == "LAB_REPORT":
+        spoke_agent.tools.append(get_rag_tool(reference_pdf_paths[2]))
+
+    signature_task = get_signature_task(signature_agent)
     
     advisor_task = get_advisor_task(advisor_agent, "{findings}", language=results["language"])
     
@@ -99,7 +117,9 @@ def run_veridoc(file_path):
                 "model": "nomic-embed-text:v1.5",
             }
         },
-        verbose=True
+        verbose=True,
+        memory=True,
+        tracing=True
     )
 
     try:
