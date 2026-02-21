@@ -1,102 +1,129 @@
-/* VeriDoc.ai Custom Styles - Light Theme */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+/* VeriDoc.ai Premium Glassmorphism Theme */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
 
 :root {
-    --primary: #4f46e5;
-    --secondary: #7c3aed;
-    --bg-light: #f8fafc;
-    --text-dark: #1e293b;
-    --glass-bg: rgba(255, 255, 255, 0.7);
-    --glass-border: rgba(0, 0, 0, 0.05);
+    --primary: #6366f1;
+    --secondary: #a855f7;
+    --accent: #ec4899;
+    --bg-dark: #0f172a;
+    --card-bg: rgba(30, 41, 59, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --text-main: #f1f5f9;
+    --text-muted: #94a3b8;
 }
 
 .stApp {
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-    font-family: 'Inter', sans-serif;
+    background: radial-gradient(circle at top right, #1e1b4b, #0f172a, #020617);
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-main);
 }
 
-/* Glassmorphism containers - Light Version */
-.stMetric,
-.stAlert,
-div.stButton>button {
-    background: var(--glass-bg);
-    backdrop-filter: blur(8px);
-    border: 1px solid var(--glass-border);
-    border-radius: 12px !important;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+/* Glassmorphism containers */
+div[data-testid="stMetric"],
+div.stAlert,
+div[data-testid="stExpander"],
+section[data-testid="stSidebar"]>div {
+    background: var(--card-bg) !important;
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
+/* Metric text colors */
+[data-testid="stMetricValue"] {
+    color: var(--primary) !important;
+}
+
+/* Typography */
 h1,
 h2,
 h3 {
-    color: var(--text-dark) !important;
+    background: linear-gradient(to right, #818cf8, #c084fc, #f472b6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
     font-weight: 700 !important;
 }
 
 p,
 span,
-label,
-.stMarkdown {
-    color: #475569 !important;
+label {
+    color: var(--text-main) !important;
 }
 
 /* Custom button styling */
 div.stButton>button {
     width: 100%;
-    background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+    background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%) !important;
     color: white !important;
     border: none !important;
-    padding: 12px 24px !important;
+    padding: 14px 28px !important;
     font-weight: 600 !important;
-    transition: all 0.2s ease !important;
+    border-radius: 12px !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
 }
 
 div.stButton>button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+    transform: scale(1.02);
+    box-shadow: 0 10px 25px rgba(168, 85, 247, 0.5);
+    background: linear-gradient(90deg, var(--secondary) 0%, var(--accent) 100%) !important;
 }
 
 /* Sidebar styling */
-[data-testid="stSidebar"] {
-    background-color: white !important;
-    border-right: 1px solid #e2e8f0;
+section[data-testid="stSidebar"] {
+    background-color: rgba(15, 23, 42, 0.95) !important;
+    border-right: 1px solid var(--glass-border);
 }
 
 /* File uploader styling */
-[data-testid="stFileUploadDropzone"] {
-    background: #1e293b !important;
-    /* Darker background for contrast */
-    border: 2px dashed #475569 !important;
-    border-radius: 16px !important;
-    color: white !important;
+div[data-testid="stFileUploadDropzone"] {
+    background: rgba(30, 41, 59, 0.5) !important;
+    border: 2px dashed var(--primary) !important;
+    border-radius: 20px !important;
+    transition: border-color 0.3s ease;
 }
 
-[data-testid="stFileUploadDropzone"] p,
-[data-testid="stFileUploadDropzone"] span {
-    color: white !important;
+div[data-testid="stFileUploadDropzone"]:hover {
+    border-color: var(--accent) !important;
 }
 
-/* Status widget styling */
-[data-testid="stStatusWidget"] {
-    background: #1e293b !important;
-    color: white !important;
+/* Tab styling */
+button[data-baseweb="tab"] {
+    color: var(--text-muted) !important;
+    font-weight: 600 !important;
+    background: transparent !important;
+    border: none !important;
 }
 
-[data-testid="stStatusWidget"] div {
-    color: white !important;
+button[aria-selected="true"] {
+    color: var(--primary) !important;
+    border-bottom: 2px solid var(--primary) !important;
 }
 
-/* Ensure all markdown in containers is legible */
-.stMarkdown p {
-    color: inherit;
+/* Status Widget */
+div[data-testid="stStatusWidget"] {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: 12px;
 }
 
-/* Centering Health Section */
-.health-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    width: 100%;
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stApp>div {
+    animation: fadeIn 0.6s ease-out;
 }

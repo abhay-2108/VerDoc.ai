@@ -3,7 +3,7 @@ from pypdf import PdfReader
 import pdfplumber
 from langdetect import detect
 from langchain_community.document_loaders import PyPDFLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import OllamaEmbeddings
 from crewai.tools import BaseTool
@@ -83,19 +83,31 @@ def get_document_content(file_path):
     else:
         return "Unsupported file type."
 
-def document_search_tool(query: str, pdf_path: str) -> str:
-    """Search for specific information within a PDF document using vector search."""
+def document_search_tool(query: str, pdf_path: str, persist_directory: str = None) -> str:
+    """
+    Search for specific information within a PDF document.
+    Returns the raw content of the top 3 similar results for XAI and analysis.
+    """
     try:
-        loader = PyPDFLoader(pdf_path)
-        documents = loader.load()
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-        docs = text_splitter.split_documents(documents)
-        
         embeddings = OllamaEmbeddings(model="nomic-embed-text:v1.5", base_url="http://localhost:11434")
-        vectorstore = Chroma.from_documents(docs, embeddings)
         
-        results = vectorstore.similarity_search(query, k=3)
-        return "\n---\n".join([res.page_content for res in results])
+        if persist_directory and os.path.exists(persist_directory):
+            vectorstore = Chroma(persist_directory=persist_directory, embedding_function=embeddings)
+        else:
+            loader = PyPDFLoader(pdf_path)
+            documents = loader.load()
+            text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+            docs = text_splitter.split_documents(documents)
+            
+            if persist_directory:
+                vectorstore = Chroma.from_documents(docs, embeddings, persist_directory=persist_directory)
+            else:
+                vectorstore = Chroma.from_documents(docs, embeddings)
+        
+        results = vectorstore.similarity_search(query, k=2)
+        # Store these results in a way that main.py can capture them for XAI
+        found_texts = [res.page_content for res in results]
+        return "\n---\n".join(found_texts)
     except Exception as e:
         return f"Error searching document: {str(e)}"
 

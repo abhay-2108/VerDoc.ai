@@ -1,4 +1,7 @@
 crewai
+"litellm[proxy]"
+langchain
+langchain-text-splitters
 langchain-ollama
 langchain-community
 chromadb

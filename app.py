@@ -1,5 +1,10 @@
 import streamlit as st
 import os
+
+# Disable CrewAI and LiteLLM telemetry to prevent signal errors in Streamlit threads
+os.environ["OTEL_SDK_DISABLED"] = "true"
+os.environ["CREWAI_TELEMETRY"] = "0"
+
 import tempfile
 from main import run_veridoc
 import time
@@ -55,8 +60,8 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("Powered by **CrewAI** & **Ollama**")
 
-st.title("Analyze smarter, not harder.")
-st.markdown("Automated document classification and deep analysis for professional workflows.")
+st.title("VeriDoc.ai | Intelligence in Every Page")
+st.markdown("### Elevate your document workflows with decentralized AI reasoning and multi-agent precision.")
 
 uploaded_file = st.file_uploader("Upload your document (PDF or Image)", type=["pdf", "jpg", "jpeg", "png", "webp"])
 
@@ -74,8 +79,8 @@ if uploaded_file is not None:
         st.write(f"**Size:** {uploaded_file.size / 1024:.2f} KB")
         
         if st.button("🚀 Run Analysis"):
-            with st.status("Initializing Agents...", expanded=True) as status:
-                st.write("Dispatcher identifying document type...")
+            with st.status("🧠 Analyzing Document...", expanded=True) as status:
+                st.write("Initializing agents and memory check...")
                 try:
                     results = run_veridoc(tmp_path)
                     
@@ -84,11 +89,9 @@ if uploaded_file is not None:
                         status.update(label="Analysis Failed", state="error", expanded=True)
                     else:
                         st.write(f"Classified as: **{results['doc_type']}**")
-                        st.write(f"Language: **{results['language']}**")
-                        st.write("Specialized agent extracting data...")
-                        st.write("Verifying signatures & authentication...")
-                        st.write("Advisor synthesizing final report...")
-                        status.update(label="Analysis Complete!", state="complete", expanded=False)
+                        st.write("Parallel specialized agents working...")
+                        st.write("Final report synthesized by advisor...")
+                        status.update(label="✅ Analysis Complete!", state="complete", expanded=False)
                         
                         st.session_state.analysis_results = results
                         st.session_state.doc_path = tmp_path 
@@ -114,24 +117,62 @@ if uploaded_file is not None:
                 st.write(res["signature_report"] if res["signature_report"] else "No signature report generated.")
                 
             with tab3:
-                st.markdown("### Explainable AI (XAI)")
-                st.write("Below is the document with highlighted areas identified as critical for the analysis.")
+                st.markdown("### 🔍 Explainable AI (XAI)")
                 
-                if "doc_path" in st.session_state and st.session_state.doc_path.lower().endswith(".pdf"):
-                    try:
-                        doc = fitz.open(st.session_state.doc_path)
-                        page = doc.load_page(0)  
-                        pix = page.get_pixmap()
-                        img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+                col_exp, col_doc = st.columns([1, 1.5])
+                
+                with col_exp:
+                    st.markdown("#### 🤖 Why did I flag this?")
+                    if res.get("dispatcher_reasoning"):
+                        st.markdown(f"**Agent's Explanation:**")
+                        st.markdown(f'<div class="reasoning-box">{res["dispatcher_reasoning"]}</div>', unsafe_allow_html=True)
+                    else:
+                        st.warning("No reasoning captured from agent.")
                         
-                        draw = ImageDraw.Draw(img, "RGBA")
-                        
-                        st.image(img, use_container_width=True)
-                        doc.close()
-                    except Exception as e:
-                        st.error(f"Could not render highlights: {e}")
-                else:
-                    st.info("XAI highlighting is currently optimized for PDF documents.")
+                    st.markdown("#### 📄 Key Evidence Found")
+                    if res.get("spoke_report"):
+                        st.markdown(f'<div class="evidence-box">{res["spoke_report"]}</div>', unsafe_allow_html=True)
+                    else:
+                        st.info("No explicit evidence strings provided.")
+                
+                with col_doc:
+                    st.markdown("#### 🎯 Visual Evidence Map")
+                    if "doc_path" in st.session_state and st.session_state.doc_path.lower().endswith(".pdf"):
+                        try:
+                            doc = fitz.open(st.session_state.doc_path)
+                            page = doc.load_page(0)
+                            
+                            highlights_count = 0
+                            
+                            # Use agent-provided evidence for highlighting
+                            if res.get("spoke_report"):
+                                # Split by lines or commas to find potential snippets
+                                evidence_items = [line.strip("- ").strip() for line in res["spoke_report"].split("\n") if len(line.strip()) > 5]
+                                for snippet in evidence_items:
+                                    if len(snippet) > 10: # Only highlight substantial snippets
+                                        text_instances = page.search_for(snippet)
+                                        for inst in text_instances:
+                                            page.add_highlight_annot(inst)
+                                            highlights_count += 1
+                            
+                            # Fallback to key terms if no direct snippets match well
+                            if highlights_count == 0:
+                                keywords = ["deposit", "rent", "notice", "maintenance", "vendor", "gstin", "total", "test", "level", "range"]
+                                for kw in keywords:
+                                    if kw in res["final_advice"].lower():
+                                        text_instances = page.search_for(kw)
+                                        for inst in text_instances:
+                                            page.add_highlight_annot(inst)
+                                            highlights_count += 1
+                            
+                            pix = page.get_pixmap()
+                            img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+                            st.image(img, use_container_width=True)
+                            doc.close()
+                        except Exception as e:
+                            st.error(f"Could not render highlights: {e}")
+                    else:
+                        st.info("XAI highlighting is optimized for PDF documents.")
 
             with tab4:
                 st.markdown("### Human-in-the-loop")
