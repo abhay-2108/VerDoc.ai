@@ -72,16 +72,15 @@ def run_veridoc(file_path):
                 return cache[file_name]
 
     # Create Single Crew for Orchestration
-    # Using Process.hierarchical for concurrent task management
+    # Reverting to sequential process to ensure delegation tool visibility
     veridoc_crew = Crew(
-        agents=[lawyer_agent, auditor_agent, doctor_agent, signature_agent, advisor_agent],
+        agents=[dispatcher_agent, lawyer_agent, auditor_agent, doctor_agent, signature_agent, advisor_agent],
         tasks=[dispatcher_task, signature_task, advisor_task],
-        process=Process.hierarchical,
-        manager_agent=dispatcher_agent,
+        process=Process.sequential,
         embedder=embedder_config,
         verbose=True,
         memory=False, 
-        tracing=True
+        tracing=False
     )
     
     try:
@@ -89,11 +88,17 @@ def run_veridoc(file_path):
         results["final_advice"] = str(final_result)
         
         # Extract Reasoning and Evidence for XAI
+        import re
         raw_output = str(final_result)
-        if "EXPLANATION:" in raw_output:
-            results["dispatcher_reasoning"] = raw_output.split("EXPLANATION:")[1].split("EVIDENCE:")[0].strip()
-        if "EVIDENCE:" in raw_output:
-            results["spoke_report"] = raw_output.split("EVIDENCE:")[1].split("VERDICT:")[0].strip()
+        
+        # Regex to find sections regardless of markdown bolding or case
+        explanation_match = re.search(r'(?:EXPLANATION|REASONING):\s*(.*?)(?=(?:EVIDENCE|VERDICT|$))', raw_output, re.DOTALL | re.IGNORECASE)
+        evidence_match = re.search(r'EVIDENCE:\s*(.*?)(?=(?:VERDICT|$))', raw_output, re.DOTALL | re.IGNORECASE)
+        
+        if explanation_match:
+            results["dispatcher_reasoning"] = explanation_match.group(1).strip()
+        if evidence_match:
+            results["spoke_report"] = evidence_match.group(1).strip()
             
         # Extract doc_type
         raw_res = str(final_result).upper()

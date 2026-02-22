@@ -1,4 +1,5 @@
 import os
+from dotenv import load_dotenv
 from agents import reference_pdf_paths, persistent_db_paths
 from utils import document_search_tool
 
@@ -6,7 +7,8 @@ def pre_index_reference_docs():
     """
     Pre-indexes the three reference statutes into their respective persistent vector stores.
     """
-    print("Starting pre-indexing of reference documents...")
+    load_dotenv()
+    print("Starting pre-indexing of reference documents with Gemini...")
     
     doc_labels = ["Legal (Model Tenancy Act)", "Financial (CGST Act)", "Medical (Telemedicine Guidelines)"]
     

@@ -19,3 +19,5 @@ uvicorn
 python-multipart
 streamlit
 pydantic
+langchain-google-genai
+python-dotenv

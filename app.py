@@ -11,6 +11,9 @@ import time
 import json
 from PIL import Image, ImageDraw
 import fitz  
+from dotenv import load_dotenv
+
+load_dotenv() # Load environment variables from .env file
 
 st.set_page_config(
     page_title="VeriDoc.ai | AI Document Analyzer",
@@ -31,22 +34,6 @@ with st.sidebar:
     st.info("🧾 Financial Invoices")
     st.markdown("---")
     
-    st.markdown("### 📊 System Health")
-    if os.path.exists("feedback/hitl_feedback.json"):
-        with open("feedback/hitl_feedback.json", "r") as f:
-            lines = f.readlines()
-            feedbacks = [json.loads(line) for line in lines]
-            total = len(feedbacks)
-            accurate = sum(1 for fb in feedbacks if fb["status"] == "accurate")
-            accuracy = (accurate / total * 100) if total > 0 else 0
-            
-            st.markdown('<div class="health-container">', unsafe_allow_html=True)
-            c1, c2 = st.columns(2)
-            c1.metric("Total", total)
-            c2.metric("Accuracy", f"{accuracy:.0f}%")
-            st.markdown('</div>', unsafe_allow_html=True)
-    else:
-        st.write("No feedback data yet.")
         
     st.markdown("### ⚙️ Dependencies")
     import pytesseract
@@ -58,7 +45,7 @@ with st.sidebar:
         st.markdown("[Download Tesseract](https://github.com/UB-Mannheim/tesseract/wiki)")
 
     st.markdown("---")
-    st.markdown("Powered by **CrewAI** & **Ollama**")
+    st.markdown("Powered by **CrewAI** & **Google Gemini**")
 
 st.title("VeriDoc.ai | Intelligence in Every Page")
 st.markdown("### Elevate your document workflows with decentralized AI reasoning and multi-agent precision.")
@@ -167,7 +154,7 @@ if uploaded_file is not None:
                             
                             pix = page.get_pixmap()
                             img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
-                            st.image(img, use_container_width=True)
+                            st.image(img, width='stretch')
                             doc.close()
                         except Exception as e:
                             st.error(f"Could not render highlights: {e}")

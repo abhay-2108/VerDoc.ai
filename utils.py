@@ -5,7 +5,7 @@ from langdetect import detect
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
-from langchain_community.embeddings import OllamaEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from crewai.tools import BaseTool
 from pydantic import Field
 
@@ -89,7 +89,7 @@ def document_search_tool(query: str, pdf_path: str, persist_directory: str = Non
     Returns the raw content of the top 3 similar results for XAI and analysis.
     """
     try:
-        embeddings = OllamaEmbeddings(model="nomic-embed-text:v1.5", base_url="http://localhost:11434")
+        embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
         
         if persist_directory and os.path.exists(persist_directory):
             vectorstore = Chroma(persist_directory=persist_directory, embedding_function=embeddings)

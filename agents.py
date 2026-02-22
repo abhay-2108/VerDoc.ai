@@ -2,22 +2,24 @@ from crewai import Agent
 import os
 from utils import document_search_tool
 
-os.environ["OPENAI_API_KEY"] = "NA"
-os.environ["OPENAI_API_BASE"] = "http://localhost:11434/v1"
-os.environ["OTEL_SDK_DISABLED"] = "true"
-os.environ["CREWAI_TELEMETRY"] = "0"
-os.environ["CREWAI_TELEMETRY_OPT_OUT"] = "true"
-os.environ["EMBEDDINGS_OLLAMA_MODEL_NAME"] = "nomic-embed-text:v1.5"
+# llm = "gemini/gemini-1.5-flash"
+llm = "gemini/gemini-1.5-flash" # Managed via LiteLLM
 
-llm = "ollama/qwen3:8b"
+from dotenv import load_dotenv
+load_dotenv()
+
+# Explicitly unset legacy Ollama/OpenAI variables to prevent LiteLLM misrouting
+os.environ.pop("OPENAI_API_BASE", None)
+os.environ.pop("OPENAI_API_KEY", None)
 
 embedder_config = {
-    "provider": "ollama",
+    "provider": "google-generativeai",
     "config": {
-        "model": "nomic-embed-text:v1.5",
-        "base_url": "http://localhost:11434"
+        "model": "models/embedding-001",
+        "task_type": "retrieval_document",
     }
 }
+
 
 # Reference PDF search tool for regulations (e.g., Model Tenancy Act, CGST Act)
 reference_pdf_paths = [
@@ -46,7 +48,7 @@ def get_rag_tool(pdf_path, persist_directory=None, tool_name="search_document"):
 
 # Hub Agent: The Dispatcher Agent (Manager)
 dispatcher_agent = Agent(
-    role="Manager",
+    role="Dispatcher",
     goal="Coordinate the analysis of uploaded documents by identifying their type and delegating to the correct specialized agent.",
     backstory="You are an expert project manager. You supervise a team of specialists (Lawyers, Doctors, Auditors). When a document arrives, you identify its nature and assign the analysis task to the appropriate expert. You then summarize their findings for the user.",
     allow_delegation=True,

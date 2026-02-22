@@ -6,15 +6,17 @@ from textwrap import dedent
 def get_dispatcher_task(agent, sample_text):
     return Task(
         description=dedent(f"""\
-            ACT AS A STRICT DOCUMENT CLASSIFIER.
-            Identify the document type and delegate to the expert:
-            - Lease/Agreement -> Lawyer
-            - Medical/Lab -> Doctor
-            - Invoice/Bill -> Auditor
+            ACT AS A STRICT DOCUMENT CLASSIFIER AND MANAGER.
+            Analyze the following document snippet and DELEGATE the analysis to the appropriate specialized coworker:
+            - If it's a Lease or Agreement -> Delegate to the Lawyer.
+            - If it's a Medical Lab Report -> Delegate to the Doctor.
+            - If it's an Invoice or Utility Bill -> Delegate to the Auditor.
+            
+            Use your delegation tool to assigned the specialized analysis task to them.
             ---
             {sample_text}
             ---"""),
-        expected_output="Expert selection (Lawyer/Doctor/Auditor) and a 1-sentence analysis.",
+        expected_output="A confirmation of who was delegated the task and their concise findings.",
         agent=agent
     )
 
@@ -57,12 +59,6 @@ def get_auditor_task(agent):
         agent=agent
     )
 
-def get_signature_task(agent):
-    return Task(
-        description="Verify signatures/seals. Keep it brief. No CoT needed.",
-        expected_output="Brief confirmation of authenticity.",
-        agent=agent
-    )
 
 def get_signature_task(agent):
     return Task(
@@ -76,13 +72,20 @@ def get_signature_task(agent):
 def get_advisor_task(agent, technical_findings, language="en"):
     return Task(
         description=dedent(f"""\
-            Read the following technical findings and synthesize them into a friendly advice report.
-            Respond in the language indicated: {language}.
+            Summarize the findings into a helpful report for the user.
+            Respond in language: {language}.
+            
+            IMPORTANT: You must include an EXPLANATION and EVIDENCE section based on the findings below.
+            In EVIDENCE, include exact short snippets (3-6 words) from the document for highlighting.
             
             Technical Findings:
             ---
             {technical_findings}
             ---"""),
-        expected_output="A polite, empathetic, and actionable summary for the user in the specified language.",
+        expected_output=dedent("""\
+            A structured report containing:
+            1. EXPLANATION: A friendly summary of what was found and why it matters.
+            2. EVIDENCE: A list of exact text snippets/values found (used for highlighting).
+            3. VERDICT: The final verdict or recommendation."""),
         agent=agent
     )
